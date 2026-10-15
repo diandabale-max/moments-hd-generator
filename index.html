@@ -4,219 +4,831 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#171717">
 <title>朋友圈高清生成器</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f2f3f5;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+:root{color-scheme:light}
+body{
+  margin:0;background:#f2f3f5;color:#222;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif
+}
 header{background:#171717;color:#fff;padding:18px 20px}
 header h1{font-size:21px;margin:0 0 7px}
-header p{font-size:12px;color:#ccc;margin:0}
-main{max-width:1100px;margin:20px auto;padding:0 14px;display:grid;grid-template-columns:minmax(280px,360px) minmax(320px,1fr);gap:22px;align-items:start}
-.panel{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 12px #0000000b}
+header p{font-size:12px;color:#ccc;margin:0;line-height:1.7}
+main{
+  max-width:1180px;margin:20px auto;padding:0 14px;
+  display:grid;grid-template-columns:minmax(280px,380px) minmax(320px,1fr);
+  gap:22px;align-items:start
+}
+.panel{
+  background:#fff;padding:18px;border-radius:12px;
+  box-shadow:0 2px 12px #0000000b;min-width:0
+}
 h2{font-size:16px;margin:0 0 15px}
+h3{font-size:14px;margin:20px 0 8px}
 label{display:block;font-size:13px;margin:13px 0 6px;color:#444}
-input,textarea,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:7px;font:inherit;font-size:14px;background:#fff}
-textarea{min-height:85px;resize:vertical}
-button{border:0;border-radius:8px;padding:11px 14px;cursor:pointer;font-size:14px}
+input,textarea,select{
+  width:100%;padding:10px;border:1px solid #ddd;border-radius:7px;
+  font:inherit;font-size:14px;background:#fff;color:#222
+}
+input[type=file]{font-size:12px;padding:8px}
+textarea{min-height:85px;resize:vertical;line-height:1.6}
+input:focus,textarea:focus,select:focus{
+  outline:2px solid #b9d5ff;border-color:#1677ff
+}
+button{
+  border:0;border-radius:8px;padding:11px 14px;cursor:pointer;
+  font-size:14px;transition:opacity .15s
+}
+button:hover{opacity:.88}
+button:disabled{opacity:.55;cursor:wait}
 .primary{background:#1677ff;color:white}
 .secondary{background:#eee;color:#222}
+.danger{background:#fff0f0;color:#b42318}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.preview-wrap{display:flex;justify-content:center;padding:8px 0}
-.phone{width:100%;max-width:390px;background:white;border:1px solid #ddd;overflow:hidden;box-shadow:0 5px 24px #00000012}
-.status{height:30px;padding:7px 15px;font-size:12px;background:#fff;display:flex;justify-content:space-between}
-.cover{height:225px;background:#353a45 center/cover no-repeat;position:relative}
-.cover-name{position:absolute;right:14px;bottom:-19px;color:#fff;text-shadow:0 1px 4px #000;font-size:15px;font-weight:600}
-.avatar{width:66px;height:66px;border:2px solid white;border-radius:7px;object-fit:cover;background:#ddd}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row label{min-width:0}
+.help{font-size:12px;color:#888;line-height:1.7}
+.save-status{font-size:12px;color:#32845a;margin-top:10px;min-height:18px}
+.preview-title{font-size:13px;color:#666;margin:0 0 12px}
+.preview-wrap{display:flex;justify-content:center;padding:8px 0 18px}
+.phone{
+  width:390px;max-width:100%;background:white;overflow:hidden;
+  border:1px solid #e4e4e4;box-shadow:0 5px 24px #00000012;
+  color:#222;flex-shrink:0
+}
+.status{
+  height:36px;padding:0 16px;display:flex;align-items:center;
+  justify-content:space-between;background:#fff;color:#111;
+  font-size:14px;font-weight:600;letter-spacing:.1px
+}
+.status-icons{display:flex;align-items:center;gap:5px;height:100%}
+.signal-icon{font-size:12px;letter-spacing:-2px;white-space:nowrap}
+.wifi-icon{display:block;flex-shrink:0}
+.battery{
+  width:23px;height:11px;border:1.4px solid currentColor;
+  border-radius:3px;padding:1.5px;position:relative;
+  display:inline-flex;align-items:center;flex-shrink:0
+}
+.battery:after{
+  content:"";position:absolute;right:-4px;top:2.5px;width:2px;height:4px;
+  background:currentColor;border-radius:0 1px 1px 0
+}
+#batteryFill{height:100%;width:100%;border-radius:1px;background:#222}
+#chargingIcon{font-size:11px;color:#30a46c;display:none}
+.cover{
+  height:225px;background:linear-gradient(135deg,#596777,#343b46);
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+  position:relative
+}
+.cover-name{
+  position:absolute;right:14px;bottom:-19px;color:#fff;
+  text-shadow:0 1px 4px #000;font-size:15px;font-weight:600;
+  max-width:65%;overflow-wrap:anywhere;text-align:right
+}
+.avatar{
+  width:66px;height:66px;border:2px solid white;border-radius:7px;
+  object-fit:cover;background:#ddd
+}
 .profile{height:68px;position:relative;padding:0 14px}
 .profile .avatar{position:absolute;right:14px;top:-32px}
 .feed{padding:12px 15px 22px}
-.disclaimer{font-size:11px;color:#888;text-align:center;padding:8px;background:#fafafa}
 .post{display:flex;gap:12px;padding-top:10px}
-.post-avatar{width:44px;height:44px;flex-shrink:0;border-radius:5px;object-fit:cover;background:#ddd}
+.post-avatar{
+  width:44px;height:44px;flex-shrink:0;border-radius:5px;
+  object-fit:cover;background:#ddd
+}
 .post-content{flex:1;min-width:0}
-.nickname{font-size:15px;color:#576b95;font-weight:600;margin-bottom:8px}
-.post-text{font-size:15px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.nickname{font-size:15px;color:#576b95;font-weight:600;margin-bottom:8px;overflow-wrap:anywhere}
+.post-text{
+  font-size:15px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere
+}
 .photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:10px}
-.photos img{width:100%;aspect-ratio:1;object-fit:cover;background:#eee}
-.time-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:#999;gap:8px}
-.likebox{margin-top:10px;background:#f7f7f7;padding:9px;border-radius:3px;font-size:12px;line-height:1.8;color:#576b95;overflow-wrap:anywhere}
-.comments{border-top:1px solid #eee;margin-top:8px;padding-top:7px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.photos img{
+  width:100%;aspect-ratio:1;object-fit:cover;background:#eee;display:block
+}
+.photos:empty{display:none}
+.time-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:12px;font-size:12px;color:#999;gap:8px;overflow-wrap:anywhere
+}
+.likebox{
+  margin-top:10px;background:#f7f7f7;padding:9px;border-radius:3px;
+  font-size:12px;line-height:1.8;color:#576b95;overflow-wrap:anywhere
+}
+.likebox:empty{display:none}
+.comments{
+  border-top:1px solid #eee;margin-top:8px;padding-top:7px;
+  font-size:12px;line-height:1.8;overflow-wrap:anywhere
+}
+.comments:empty{display:none}
 .comment-name{color:#576b95;font-weight:600}
-.preview-title{font-size:14px;color:#666;margin:0 0 10px}
-@media(max-width:760px){main{grid-template-columns:1fr}.phone{max-width:390px}.panel{padding:14px}}
+.disclaimer{
+  font-size:10px;color:#888;text-align:center;padding:8px;
+  background:#fafafa;border-top:1px solid #f1f1f1
+}
+.preview-note{font-size:12px;color:#888;line-height:1.7}
+@media(max-width:760px){
+  main{grid-template-columns:1fr;gap:14px;margin:14px auto}
+  .panel{padding:14px}
+  .preview-panel{grid-row:1}
+  .phone{width:min(390px,100%)}
+}
+@media(max-width:360px){
+  .field-row{grid-template-columns:1fr}
+  .cover{height:190px}
+  .status{padding:0 10px}
+  .feed{padding-left:10px;padding-right:10px}
+  .post{gap:9px}
+}
 </style>
 </head>
 <body>
 <header>
   <h1>朋友圈高清生成器</h1>
-  <p>自定义编辑 · 高清 PNG 导出 · 本地保存 · 模拟演示工具</p>
+  <p>自定义编辑 · 高清 PNG 导出 · 自动保存 · 本地图片管理</p>
 </header>
 
 <main>
 <section class="panel">
   <h2>编辑朋友圈内容</h2>
 
-  <label>昵称</label>
-  <input id="nickname" value="小明" placeholder="输入昵称">
+  <label for="nickname">昵称</label>
+  <input id="nickname" value="小明" maxlength="60" placeholder="输入昵称">
 
-  <label>头像</label>
+  <label for="avatarFile">头像</label>
   <input id="avatarFile" type="file" accept="image/*">
+  <p class="help">支持 JPG、PNG、WebP 等常见图片格式。</p>
 
-  <label>朋友圈封面</label>
+  <label for="coverFile">朋友圈封面</label>
   <input id="coverFile" type="file" accept="image/*">
 
-  <label>动态文字</label>
-  <textarea id="postText" placeholder="输入朋友圈内容">记录生活里的美好，慢慢前进，认真生活。</textarea>
+  <label for="postText">动态文字</label>
+  <textarea id="postText" maxlength="5000" placeholder="输入朋友圈内容">记录生活里的美好，慢慢前进，认真生活。</textarea>
 
-  <label>发布时间</label>
-  <input id="postTime" value="今天 18:30">
+  <label for="postTime">发布时间</label>
+  <input id="postTime" value="今天 18:30" maxlength="80">
 
-  <label>发布图片（可多选）</label>
+  <label for="photoFiles">发布图片（最多 9 张）</label>
   <input id="photoFiles" type="file" accept="image/*" multiple>
+  <p class="help">重新选择图片会替换当前动态图片。</p>
 
-  <label>点赞昵称（每行一个）</label>
-  <textarea id="likes">小红
+  <label for="likes">点赞昵称（每行一个）</label>
+  <textarea id="likes" maxlength="3000">小红
 阿杰
 小雨</textarea>
 
-  <label>评论内容（每行一条，格式：昵称：评论）</label>
-  <textarea id="comments">小红：拍得真不错！
+  <label for="comments">评论内容（每行一条，格式：昵称：评论）</label>
+  <textarea id="comments" maxlength="5000">小红：拍得真不错！
 阿杰：生活真美好。</textarea>
 
-  <label>手机状态栏时间</label>
-  <input id="statusTime" value="18:30">
+  <h3>手机状态栏</h3>
+  <div class="field-row">
+    <label for="statusTime">状态栏时间
+      <input id="statusTime" value="18:30" maxlength="10">
+    </label>
+    <label for="signalLevel">移动信号
+      <select id="signalLevel">
+        <option value="1">1 格</option>
+        <option value="2">2 格</option>
+        <option value="3">3 格</option>
+        <option value="4" selected>4 格</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="field-row">
+    <label for="wifiLevel">Wi-Fi 显示
+      <select id="wifiLevel">
+        <option value="0">隐藏</option>
+        <option value="1">较弱</option>
+        <option value="2">中等</option>
+        <option value="3" selected>完整</option>
+      </select>
+    </label>
+    <label for="batteryLevel">电池电量
+      <select id="batteryLevel">
+        <option value="10">10%</option>
+        <option value="25">25%</option>
+        <option value="50">50%</option>
+        <option value="75">75%</option>
+        <option value="100" selected>100%</option>
+      </select>
+    </label>
+  </div>
+
+  <label for="batteryCharging">充电状态</label>
+  <select id="batteryCharging">
+    <option value="no" selected>未充电</option>
+    <option value="yes">充电中</option>
+  </select>
 
   <div class="actions">
     <button class="primary" id="exportBtn">导出高清 PNG</button>
-    <button class="secondary" id="saveBtn">保存草稿</button>
+    <button class="secondary" id="saveBtn">立即保存</button>
     <button class="secondary" id="resetBtn">恢复示例</button>
+    <button class="danger" id="clearImagesBtn">清除图片</button>
   </div>
-  <p style="font-size:12px;color:#888;line-height:1.7">提示：草稿保存在当前浏览器。上传的图片不会自动同步到其他设备。导出的图片用于个人创作或演示，请勿冒充真实微信记录。</p>
+  <div class="save-status" id="saveStatus" aria-live="polite">正在读取本地草稿……</div>
+  <p class="help">
+    文字和设置会自动保存在当前浏览器，图片会存储在本地浏览器数据库中。
+    清除浏览器数据、使用无痕模式或更换设备，可能导致草稿丢失。
+    导出图片用于个人创作或演示，请勿冒充真实微信记录。
+  </p>
 </section>
 
-<section class="panel">
+<section class="panel preview-panel">
   <h2>实时预览</h2>
-  <p class="preview-title">预览效果 · 模拟演示</p>
+  <p class="preview-title">朋友圈模拟效果</p>
   <div class="preview-wrap">
     <div class="phone" id="capture">
-      <div class="status"><span id="statusLeft">18:30</span><span>●●●　Wi-Fi　▰</span></div>
+      <div class="status">
+        <span id="statusLeft">18:30</span>
+        <span class="status-icons">
+          <span class="signal-icon" id="signalIcon" aria-label="移动信号">▂▄▆█</span>
+          <svg id="wifiIcon" class="wifi-icon" width="19" height="16" viewBox="0 0 24 20" aria-label="Wi-Fi">
+            <path d="M2 6 Q12 -2 22 6 M5 10 Q12 4 19 10 M8.5 14 Q12 10 15.5 14"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
+          </svg>
+          <span class="battery">
+            <span id="batteryFill"></span>
+          </span>
+          <span id="chargingIcon" aria-label="充电中">ϟ</span>
+        </span>
+      </div>
+
       <div class="cover" id="cover">
         <div class="cover-name" id="coverName">小明</div>
       </div>
+
       <div class="profile">
-        <img class="avatar" id="profileAvatar" alt="头像">
+        <img class="avatar" id="profileAvatar" alt="模拟头像">
       </div>
+
       <div class="feed">
         <div class="post">
-          <img class="post-avatar" id="postAvatar" alt="头像">
+          <img class="post-avatar" id="postAvatar" alt="模拟头像">
           <div class="post-content">
             <div class="nickname" id="showNickname">小明</div>
             <div class="post-text" id="showText"></div>
             <div class="photos" id="showPhotos"></div>
-            <div class="time-row"><span id="showTime">今天 18:30</span><span>•••</span></div>
+            <div class="time-row">
+              <span id="showTime">今天 18:30</span>
+              <span aria-hidden="true">•••</span>
+            </div>
             <div class="likebox" id="showLikes"></div>
             <div class="comments" id="showComments"></div>
           </div>
         </div>
       </div>
+
       <div class="disclaimer">模拟演示内容 · 非真实微信页面</div>
     </div>
   </div>
+  <p class="preview-note">
+    预览会随着编辑内容同步变化。导出图片的清晰度取决于原始图片质量；
+    本工具为朋友圈风格模拟设计，不是微信官方页面。
+  </p>
 </section>
 </main>
 
 <script>
-const $ = id => document.getElementById(id);
-let avatarURL = "";
-let coverURL = "";
-let photoURLs = [];
+'use strict';
 
-function makeAvatar(){
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><rect width="160" height="160" fill="#d9e5f2"/><circle cx="80" cy="58" r="30" fill="#8da6c1"/><path d="M25 155 Q30 95 80 98 Q130 95 135 155" fill="#8da6c1"/></svg>';
+const $ = id => document.getElementById(id);
+const TEXT_KEY = 'momentsHdDraftV2';
+const DB_NAME = 'momentsHdImagesV2';
+const STORE_NAME = 'images';
+
+let avatarURL = '';
+let coverURL = '';
+let photoURLs = [];
+let db = null;
+let saveTimer = null;
+let objectURLs = [];
+let isRestoring = false;
+
+const defaultValues = {
+  nickname: '小明',
+  postText: '记录生活里的美好，慢慢前进，认真生活。',
+  postTime: '今天 18:30',
+  likes: '小红\n阿杰\n小雨',
+  comments: '小红：拍得真不错！\n阿杰：生活真美好。',
+  statusTime: '18:30',
+  signalLevel: '4',
+  wifiLevel: '3',
+  batteryLevel: '100',
+  batteryCharging: 'no'
+};
+
+function makeAvatar() {
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160">' +
+    '<rect width="160" height="160" fill="#d9e5f2"/>' +
+    '<circle cx="80" cy="58" r="30" fill="#8da6c1"/>' +
+    '<path d="M25 155 Q30 95 80 98 Q130 95 135 155" fill="#8da6c1"/>' +
+    '</svg>';
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
-function render(){
+
+function setStatus(message, isError = false) {
+  $('saveStatus').textContent = message;
+  $('saveStatus').style.color = isError ? '#b42318' : '#32845a';
+}
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) {
+      reject(new Error('当前浏览器不支持本地图片数据库'));
+      return;
+    }
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(STORE_NAME)) {
+        database.createObjectStore(STORE_NAME);
+      }
+    };
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function dbRequest(mode, action) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error('本地图片数据库尚未准备好'));
+      return;
+    }
+    const tx = db.transaction(STORE_NAME, mode);
+    const store = tx.objectStore(STORE_NAME);
+    let request;
+    try {
+      request = action(store);
+    } catch (error) {
+      reject(error);
+      return;
+    }
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function dbPut(key, value) {
+  return dbRequest('readwrite', store => store.put(value, key));
+}
+
+function dbGet(key) {
+  return dbRequest('readonly', store => store.get(key));
+}
+
+function dbDelete(key) {
+  return dbRequest('readwrite', store => store.delete(key));
+}
+
+function dbClear() {
+  return dbRequest('readwrite', store => store.clear());
+}
+
+function getSettings() {
+  const data = {};
+  Object.keys(defaultValues).forEach(id => {
+    data[id] = $(id).value;
+  });
+  return data;
+}
+
+function applySettings(data) {
+  Object.keys(defaultValues).forEach(id => {
+    $(id).value = data && data[id] != null
+      ? String(data[id])
+      : defaultValues[id];
+  });
+}
+
+function saveTextSettings(showMessage = true) {
+  try {
+    localStorage.setItem(TEXT_KEY, JSON.stringify(getSettings()));
+    if (showMessage) setStatus('文字和设置已保存');
+    return true;
+  } catch (error) {
+    setStatus('保存失败：浏览器本地存储空间可能不足', true);
+    return false;
+  }
+}
+
+function scheduleSave() {
+  if (isRestoring) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveTextSettings(true), 350);
+}
+
+function revokeURL(url) {
+  if (url && url.startsWith('blob:')) {
+    URL.revokeObjectURL(url);
+  }
+}
+
+function createManagedURL(blob) {
+  const url = URL.createObjectURL(blob);
+  objectURLs.push(url);
+  return url;
+}
+
+function clearManagedURLs() {
+  objectURLs.forEach(revokeURL);
+  objectURLs = [];
+}
+
+function render() {
   const name = $('nickname').value || '未命名';
+
   $('showNickname').textContent = name;
   $('coverName').textContent = name;
   $('showText').textContent = $('postText').value;
   $('showTime').textContent = $('postTime').value;
-  $('statusLeft').textContent = $('statusTime').value;
-  const av = avatarURL || makeAvatar();
-  $('profileAvatar').src = av;
-  $('postAvatar').src = av;
+  $('statusLeft').textContent = $('statusTime').value || '18:30';
+
+  const avatar = avatarURL || makeAvatar();
+  $('profileAvatar').src = avatar;
+  $('postAvatar').src = avatar;
+
+  const signal = Math.max(1, Math.min(4, Number($('signalLevel').value) || 4));
+  $('signalIcon').textContent = ['', '▂', '▂▄', '▂▄▆', '▂▄▆█'][signal];
+  $('signalIcon').style.opacity = String(0.35 + signal * 0.16);
+
+  const wifi = Number($('wifiLevel').value);
+  $('wifiIcon').style.visibility = wifi === 0 ? 'hidden' : 'visible';
+  $('wifiIcon').style.opacity = wifi === 1 ? '0.35' : wifi === 2 ? '0.65' : '1';
+
+  const battery = Number($('batteryLevel').value) || 100;
+  $('batteryFill').style.width = Math.max(0, Math.min(100, battery)) + '%';
+  $('batteryFill').style.background =
+    $('batteryCharging').value === 'yes' ? '#30a46c' :
+    battery <= 10 ? '#e5484d' : '#222';
+  $('chargingIcon').style.display =
+    $('batteryCharging').value === 'yes' ? 'inline' : 'none';
 
   $('showPhotos').replaceChildren();
-  photoURLs.slice(0,9).forEach(src=>{
+  photoURLs.slice(0, 9).forEach(src => {
     const img = document.createElement('img');
     img.src = src;
+    img.alt = '动态图片';
     $('showPhotos').appendChild(img);
   });
 
-  const likes = $('likes').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const likes = $('likes').value.split('\n').map(s => s.trim()).filter(Boolean);
   $('showLikes').textContent = likes.length ? '♥  ' + likes.join('、') : '';
 
   $('showComments').replaceChildren();
-  $('comments').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(line=>{
+  $('comments').value.split('\n').map(s => s.trim()).filter(Boolean).forEach(line => {
     const div = document.createElement('div');
-    const idx = line.indexOf('：') >= 0 ? line.indexOf('：') : line.indexOf(':');
-    if(idx >= 0){
-      const n = document.createElement('span');
-      n.className = 'comment-name';
-      n.textContent = line.slice(0,idx);
-      const t = document.createElement('span');
-      t.textContent = '：' + line.slice(idx+1);
-      div.append(n,t);
-    } else div.textContent = line;
+    const chineseColon = line.indexOf('：');
+    const englishColon = line.indexOf(':');
+    let idx = -1;
+    if (chineseColon >= 0 && englishColon >= 0) {
+      idx = Math.min(chineseColon, englishColon);
+    } else {
+      idx = Math.max(chineseColon, englishColon);
+    }
+
+    if (idx >= 0) {
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'comment-name';
+      nameSpan.textContent = line.slice(0, idx);
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = '：' + line.slice(idx + 1).trim();
+
+      div.append(nameSpan, textSpan);
+    } else {
+      div.textContent = line;
+    }
     $('showComments').appendChild(div);
   });
 }
-['nickname','postText','postTime','likes','comments','statusTime'].forEach(id=>{
-  $(id).addEventListener('input',render);
-});
-$('avatarFile').addEventListener('change',e=>{
-  const f=e.target.files[0]; if(f){avatarURL=URL.createObjectURL(f);render();}
-});
-$('coverFile').addEventListener('change',e=>{
-  const f=e.target.files[0]; if(f){coverURL=URL.createObjectURL(f);$('cover').style.backgroundImage=`url("${coverURL}")`;}
-});
-$('photoFiles').addEventListener('change',e=>{
-  photoURLs=Array.from(e.target.files).map(f=>URL.createObjectURL(f));render();
-});
-$('saveBtn').addEventListener('click',()=>{
-  const data={};
-  ['nickname','postText','postTime','likes','comments','statusTime'].forEach(id=>data[id]=$(id).value);
-  try{localStorage.setItem('momentsHdDraft',JSON.stringify(data));alert('草稿已保存到当前浏览器。图片需重新选择。');}
-  catch(e){alert('保存失败，请检查浏览器存储设置。');}
-});
-$('resetBtn').addEventListener('click',()=>{
-  if(!confirm('确定恢复示例文字吗？'))return;
-  $('nickname').value='小明';
-  $('postText').value='记录生活里的美好，慢慢前进，认真生活。';
-  $('postTime').value='今天 18:30';
-  $('statusTime').value='18:30';
-  $('likes').value='小红\n阿杰\n小雨';
-  $('comments').value='小红：拍得真不错！\n阿杰：生活真美好。';
-  avatarURL='';coverURL='';photoURLs=[];
-  $('avatarFile').value='';$('coverFile').value='';$('photoFiles').value='';
-  $('cover').style.backgroundImage='';
-  render();
-});
-$('exportBtn').addEventListener('click',async()=>{
-  if(!window.html2canvas){
-    alert('正在加载高清导出组件，请检查网络后刷新网页重试。');return;
+
+function loadImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      reject(new Error('请选择有效的图片文件'));
+      return;
+    }
+    const img = new Image();
+    const tempURL = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(tempURL);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(tempURL);
+      reject(new Error('图片读取失败，请换一张图片试试'));
+    };
+    img.src = tempURL;
+  });
+}
+
+async function compressImage(file, maxSide = 1600) {
+  const img = await loadImageFile(file);
+  const ratio = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const width = Math.max(1, Math.round(img.naturalWidth * ratio));
+  const height = Math.max(1, Math.round(img.naturalHeight * ratio));
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('无法处理图片');
+  ctx.drawImage(img, 0, 0, width, height);
+
+  const blob = await new Promise(resolve => {
+    canvas.toBlob(resolve, 'image/jpeg', 0.88);
+  });
+  canvas.width = 0;
+  canvas.height = 0;
+  if (!blob) throw new Error('图片压缩失败');
+  return blob;
+}
+
+async function persistImage(key, file) {
+  const blob = await compressImage(file);
+  await dbPut(key, blob);
+  return createManagedURL(blob);
+}
+
+async function restoreImages() {
+  avatarURL = '';
+  coverURL = '';
+  photoURLs = [];
+
+  try {
+    const avatarBlob = await dbGet('avatar');
+    if (avatarBlob) avatarURL = createManagedURL(avatarBlob);
+
+    const coverBlob = await dbGet('cover');
+    if (coverBlob) {
+      coverURL = createManagedURL(coverBlob);
+      $('cover').style.backgroundImage = `url("${coverURL}")`;
+    } else {
+      $('cover').style.backgroundImage = '';
+    }
+
+    const photoCount = await dbGet('photoCount');
+    for (let i = 0; i < Math.min(Number(photoCount) || 0, 9); i++) {
+      const blob = await dbGet('photo' + i);
+      if (blob) photoURLs.push(createManagedURL(blob));
+    }
+  } catch (error) {
+    console.error(error);
+    setStatus('图片读取失败；文字设置仍可使用', true);
   }
-  try{
-    const canvas=await html2canvas($('capture'),{scale:3,useCORS:true,backgroundColor:'#ffffff'});
-    const a=document.createElement('a');
-    a.download='朋友圈模拟演示.png';
-    a.href=canvas.toDataURL('image/png');
-    a.click();
-  }catch(e){alert('导出失败。请刷新网页后重试。');}
+  render();
+}
+
+async function savePhotos(files) {
+  if (files.length > 9) {
+    alert('最多选择 9 张图片，已为你保留前 9 张。');
+    files = files.slice(0, 9);
+  }
+  if (!db) {
+    alert('本地图片存储尚未准备好，请稍后重试。');
+    return;
+  }
+
+  setStatus('正在保存图片……');
+  const newURLs = [];
+
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const blob = await compressImage(files[i]);
+      await dbPut('photo' + i, blob);
+      newURLs.push(createManagedURL(blob));
+    }
+
+    const oldCount = Number(await dbGet('photoCount')) || 0;
+    for (let i = files.length; i < oldCount; i++) {
+      await dbDelete('photo' + i);
+    }
+    await dbPut('photoCount', files.length);
+
+    photoURLs.forEach(revokeURL);
+    objectURLs = objectURLs.filter(url => !photoURLs.includes(url));
+    photoURLs = newURLs;
+    render();
+    setStatus('动态图片已保存');
+  } catch (error) {
+    console.error(error);
+    newURLs.forEach(revokeURL);
+    objectURLs = objectURLs.filter(url => !newURLs.includes(url));
+    setStatus('图片保存失败，可能是浏览器存储空间不足', true);
+    alert('图片保存失败。请尝试减少图片数量或更换较小的图片。');
+  }
+}
+
+async function waitForImages(container) {
+  const images = Array.from(container.querySelectorAll('img'));
+  await Promise.all(images.map(img => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    return new Promise(resolve => {
+      img.onload = resolve;
+      img.onerror = resolve;
+      setTimeout(resolve, 8000);
+    });
+  }));
+}
+
+async function exportPNG() {
+  const button = $('exportBtn');
+  if (typeof window.html2canvas !== 'function') {
+    alert('高清导出组件尚未加载。请确认网络正常，刷新网页后重试。');
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = '正在生成图片……';
+
+  try {
+    render();
+    await waitForImages($('capture'));
+
+    const canvas = await window.html2canvas($('capture'), {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 15000,
+      width: $('capture').offsetWidth,
+      windowWidth: Math.max(document.documentElement.clientWidth, 1200)
+    });
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('无法生成 PNG 文件');
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '朋友圈模拟演示.png';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    setStatus('PNG 图片已生成');
+  } catch (error) {
+    console.error(error);
+    alert('导出失败，请刷新网页后重试。如果图片太大，可以减少图片数量。');
+    setStatus('导出失败，请检查网络或图片大小', true);
+  } finally {
+    button.disabled = false;
+    button.textContent = '导出高清 PNG';
+  }
+}
+
+async function clearImages() {
+  if (!confirm('确定清除头像、封面和全部动态图片吗？')) return;
+  try {
+    if (db) await dbClear();
+    clearManagedURLs();
+    avatarURL = '';
+    coverURL = '';
+    photoURLs = [];
+    $('avatarFile').value = '';
+    $('coverFile').value = '';
+    $('photoFiles').value = '';
+    $('cover').style.backgroundImage = '';
+    render();
+    setStatus('图片已清除');
+  } catch (error) {
+    console.error(error);
+    alert('清除图片失败，请刷新网页后重试。');
+  }
+}
+
+async function resetExample() {
+  if (!confirm('确定恢复示例内容并清除已保存的图片吗？')) return;
+
+  isRestoring = true;
+  applySettings(defaultValues);
+  isRestoring = false;
+
+  try {
+    if (db) await dbClear();
+    clearManagedURLs();
+    avatarURL = '';
+    coverURL = '';
+    photoURLs = [];
+    $('avatarFile').value = '';
+    $('coverFile').value = '';
+    $('photoFiles').value = '';
+    $('cover').style.backgroundImage = '';
+    saveTextSettings(false);
+    render();
+    setStatus('已恢复示例内容');
+  } catch (error) {
+    console.error(error);
+    setStatus('示例已恢复，但清除图片时发生错误', true);
+  }
+}
+
+async function initialize() {
+  isRestoring = true;
+
+  try {
+    const saved = localStorage.getItem(TEXT_KEY);
+    applySettings(saved ? JSON.parse(saved) : defaultValues);
+  } catch (error) {
+    applySettings(defaultValues);
+  }
+
+  try {
+    await openDatabase();
+    await restoreImages();
+    setStatus('草稿已读取，可开始编辑');
+  } catch (error) {
+    console.error(error);
+    setStatus('图片持久化不可用，文字编辑仍可使用', true);
+    render();
+  }
+
+  isRestoring = false;
+  saveTextSettings(false);
+}
+
+Object.keys(defaultValues).forEach(id => {
+  const el = $(id);
+  el.addEventListener('input', () => {
+    render();
+    scheduleSave();
+  });
+  el.addEventListener('change', () => {
+    render();
+    scheduleSave();
+  });
 });
-render();
+
+$('avatarFile').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  if (!file || !db) return;
+
+  try {
+    setStatus('正在保存头像……');
+    const url = await persistImage('avatar', file);
+    revokeURL(avatarURL);
+    objectURLs = objectURLs.filter(item => item !== avatarURL);
+    avatarURL = url;
+    render();
+    setStatus('头像已保存');
+  } catch (error) {
+    console.error(error);
+    alert('头像保存失败，请尝试较小的图片。');
+    setStatus('头像保存失败', true);
+  }
+});
+
+$('coverFile').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  if (!file || !db) return;
+
+  try {
+    setStatus('正在保存封面……');
+    const url = await persistImage('cover', file);
+    revokeURL(coverURL);
+    objectURLs = objectURLs.filter(item => item !== coverURL);
+    coverURL = url;
+    $('cover').style.backgroundImage = `url("${coverURL}")`;
+    setStatus('封面已保存');
+  } catch (error) {
+    console.error(error);
+    alert('封面保存失败，请尝试较小的图片。');
+    setStatus('封面保存失败', true);
+  }
+});
+
+$('photoFiles').addEventListener('change', async event => {
+  const files = Array.from(event.target.files || []);
+  if (files.length) await savePhotos(files);
+});
+
+$('saveBtn').addEventListener('click', () => {
+  if (saveTextSettings(true)) {
+    setStatus('文字和设置已保存；图片会单独保存');
+  }
+});
+
+$('resetBtn').addEventListener('click', resetExample);
+$('clearImagesBtn').addEventListener('click', clearImages);
+$('exportBtn').addEventListener('click', exportPNG);
+
+initialize();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+  referrerpolicy="no-referrer"></script>
 </body>
 </html>
 ```
