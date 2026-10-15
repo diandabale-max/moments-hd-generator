@@ -1,0 +1,222 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>朋友圈高清生成器</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f2f3f5;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#171717;color:#fff;padding:18px 20px}
+header h1{font-size:21px;margin:0 0 7px}
+header p{font-size:12px;color:#ccc;margin:0}
+main{max-width:1100px;margin:20px auto;padding:0 14px;display:grid;grid-template-columns:minmax(280px,360px) minmax(320px,1fr);gap:22px;align-items:start}
+.panel{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 12px #0000000b}
+h2{font-size:16px;margin:0 0 15px}
+label{display:block;font-size:13px;margin:13px 0 6px;color:#444}
+input,textarea,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:7px;font:inherit;font-size:14px;background:#fff}
+textarea{min-height:85px;resize:vertical}
+button{border:0;border-radius:8px;padding:11px 14px;cursor:pointer;font-size:14px}
+.primary{background:#1677ff;color:white}
+.secondary{background:#eee;color:#222}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.preview-wrap{display:flex;justify-content:center;padding:8px 0}
+.phone{width:100%;max-width:390px;background:white;border:1px solid #ddd;overflow:hidden;box-shadow:0 5px 24px #00000012}
+.status{height:30px;padding:7px 15px;font-size:12px;background:#fff;display:flex;justify-content:space-between}
+.cover{height:225px;background:#353a45 center/cover no-repeat;position:relative}
+.cover-name{position:absolute;right:14px;bottom:-19px;color:#fff;text-shadow:0 1px 4px #000;font-size:15px;font-weight:600}
+.avatar{width:66px;height:66px;border:2px solid white;border-radius:7px;object-fit:cover;background:#ddd}
+.profile{height:68px;position:relative;padding:0 14px}
+.profile .avatar{position:absolute;right:14px;top:-32px}
+.feed{padding:12px 15px 22px}
+.disclaimer{font-size:11px;color:#888;text-align:center;padding:8px;background:#fafafa}
+.post{display:flex;gap:12px;padding-top:10px}
+.post-avatar{width:44px;height:44px;flex-shrink:0;border-radius:5px;object-fit:cover;background:#ddd}
+.post-content{flex:1;min-width:0}
+.nickname{font-size:15px;color:#576b95;font-weight:600;margin-bottom:8px}
+.post-text{font-size:15px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:10px}
+.photos img{width:100%;aspect-ratio:1;object-fit:cover;background:#eee}
+.time-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:#999;gap:8px}
+.likebox{margin-top:10px;background:#f7f7f7;padding:9px;border-radius:3px;font-size:12px;line-height:1.8;color:#576b95;overflow-wrap:anywhere}
+.comments{border-top:1px solid #eee;margin-top:8px;padding-top:7px;font-size:12px;line-height:1.8;overflow-wrap:anywhere}
+.comment-name{color:#576b95;font-weight:600}
+.preview-title{font-size:14px;color:#666;margin:0 0 10px}
+@media(max-width:760px){main{grid-template-columns:1fr}.phone{max-width:390px}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>朋友圈高清生成器</h1>
+  <p>自定义编辑 · 高清 PNG 导出 · 本地保存 · 模拟演示工具</p>
+</header>
+
+<main>
+<section class="panel">
+  <h2>编辑朋友圈内容</h2>
+
+  <label>昵称</label>
+  <input id="nickname" value="小明" placeholder="输入昵称">
+
+  <label>头像</label>
+  <input id="avatarFile" type="file" accept="image/*">
+
+  <label>朋友圈封面</label>
+  <input id="coverFile" type="file" accept="image/*">
+
+  <label>动态文字</label>
+  <textarea id="postText" placeholder="输入朋友圈内容">记录生活里的美好，慢慢前进，认真生活。</textarea>
+
+  <label>发布时间</label>
+  <input id="postTime" value="今天 18:30">
+
+  <label>发布图片（可多选）</label>
+  <input id="photoFiles" type="file" accept="image/*" multiple>
+
+  <label>点赞昵称（每行一个）</label>
+  <textarea id="likes">小红
+阿杰
+小雨</textarea>
+
+  <label>评论内容（每行一条，格式：昵称：评论）</label>
+  <textarea id="comments">小红：拍得真不错！
+阿杰：生活真美好。</textarea>
+
+  <label>手机状态栏时间</label>
+  <input id="statusTime" value="18:30">
+
+  <div class="actions">
+    <button class="primary" id="exportBtn">导出高清 PNG</button>
+    <button class="secondary" id="saveBtn">保存草稿</button>
+    <button class="secondary" id="resetBtn">恢复示例</button>
+  </div>
+  <p style="font-size:12px;color:#888;line-height:1.7">提示：草稿保存在当前浏览器。上传的图片不会自动同步到其他设备。导出的图片用于个人创作或演示，请勿冒充真实微信记录。</p>
+</section>
+
+<section class="panel">
+  <h2>实时预览</h2>
+  <p class="preview-title">预览效果 · 模拟演示</p>
+  <div class="preview-wrap">
+    <div class="phone" id="capture">
+      <div class="status"><span id="statusLeft">18:30</span><span>●●●　Wi-Fi　▰</span></div>
+      <div class="cover" id="cover">
+        <div class="cover-name" id="coverName">小明</div>
+      </div>
+      <div class="profile">
+        <img class="avatar" id="profileAvatar" alt="头像">
+      </div>
+      <div class="feed">
+        <div class="post">
+          <img class="post-avatar" id="postAvatar" alt="头像">
+          <div class="post-content">
+            <div class="nickname" id="showNickname">小明</div>
+            <div class="post-text" id="showText"></div>
+            <div class="photos" id="showPhotos"></div>
+            <div class="time-row"><span id="showTime">今天 18:30</span><span>•••</span></div>
+            <div class="likebox" id="showLikes"></div>
+            <div class="comments" id="showComments"></div>
+          </div>
+        </div>
+      </div>
+      <div class="disclaimer">模拟演示内容 · 非真实微信页面</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let avatarURL = "";
+let coverURL = "";
+let photoURLs = [];
+
+function makeAvatar(){
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><rect width="160" height="160" fill="#d9e5f2"/><circle cx="80" cy="58" r="30" fill="#8da6c1"/><path d="M25 155 Q30 95 80 98 Q130 95 135 155" fill="#8da6c1"/></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+function render(){
+  const name = $('nickname').value || '未命名';
+  $('showNickname').textContent = name;
+  $('coverName').textContent = name;
+  $('showText').textContent = $('postText').value;
+  $('showTime').textContent = $('postTime').value;
+  $('statusLeft').textContent = $('statusTime').value;
+  const av = avatarURL || makeAvatar();
+  $('profileAvatar').src = av;
+  $('postAvatar').src = av;
+
+  $('showPhotos').replaceChildren();
+  photoURLs.slice(0,9).forEach(src=>{
+    const img = document.createElement('img');
+    img.src = src;
+    $('showPhotos').appendChild(img);
+  });
+
+  const likes = $('likes').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  $('showLikes').textContent = likes.length ? '♥  ' + likes.join('、') : '';
+
+  $('showComments').replaceChildren();
+  $('comments').value.split('\n').map(s=>s.trim()).filter(Boolean).forEach(line=>{
+    const div = document.createElement('div');
+    const idx = line.indexOf('：') >= 0 ? line.indexOf('：') : line.indexOf(':');
+    if(idx >= 0){
+      const n = document.createElement('span');
+      n.className = 'comment-name';
+      n.textContent = line.slice(0,idx);
+      const t = document.createElement('span');
+      t.textContent = '：' + line.slice(idx+1);
+      div.append(n,t);
+    } else div.textContent = line;
+    $('showComments').appendChild(div);
+  });
+}
+['nickname','postText','postTime','likes','comments','statusTime'].forEach(id=>{
+  $(id).addEventListener('input',render);
+});
+$('avatarFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(f){avatarURL=URL.createObjectURL(f);render();}
+});
+$('coverFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(f){coverURL=URL.createObjectURL(f);$('cover').style.backgroundImage=`url("${coverURL}")`;}
+});
+$('photoFiles').addEventListener('change',e=>{
+  photoURLs=Array.from(e.target.files).map(f=>URL.createObjectURL(f));render();
+});
+$('saveBtn').addEventListener('click',()=>{
+  const data={};
+  ['nickname','postText','postTime','likes','comments','statusTime'].forEach(id=>data[id]=$(id).value);
+  try{localStorage.setItem('momentsHdDraft',JSON.stringify(data));alert('草稿已保存到当前浏览器。图片需重新选择。');}
+  catch(e){alert('保存失败，请检查浏览器存储设置。');}
+});
+$('resetBtn').addEventListener('click',()=>{
+  if(!confirm('确定恢复示例文字吗？'))return;
+  $('nickname').value='小明';
+  $('postText').value='记录生活里的美好，慢慢前进，认真生活。';
+  $('postTime').value='今天 18:30';
+  $('statusTime').value='18:30';
+  $('likes').value='小红\n阿杰\n小雨';
+  $('comments').value='小红：拍得真不错！\n阿杰：生活真美好。';
+  avatarURL='';coverURL='';photoURLs=[];
+  $('avatarFile').value='';$('coverFile').value='';$('photoFiles').value='';
+  $('cover').style.backgroundImage='';
+  render();
+});
+$('exportBtn').addEventListener('click',async()=>{
+  if(!window.html2canvas){
+    alert('正在加载高清导出组件，请检查网络后刷新网页重试。');return;
+  }
+  try{
+    const canvas=await html2canvas($('capture'),{scale:3,useCORS:true,backgroundColor:'#ffffff'});
+    const a=document.createElement('a');
+    a.download='朋友圈模拟演示.png';
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+  }catch(e){alert('导出失败。请刷新网页后重试。');}
+});
+render();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
+```
