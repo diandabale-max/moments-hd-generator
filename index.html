@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -342,9 +341,15 @@ button:disabled{opacity:.55;cursor:wait}
 <label for="batteryLevel">
   电池电量：<span id="batteryValue">100%</span>
 </label>
+<input id="batteryLevel" type="range" min="0" max="100" value="100">
 
+<div class="field-row">
+  <label for="batteryCharging">充电状态
+    <select id="batteryCharging">
+      <option value="no" selected>未充电</option>
+      <option value="yes">充电中</option>
+    </select>
   </label>
-
   <label for="batteryPercent">电池百分比
     <select id="batteryPercent">
       <option value="no" selected>隐藏</option>
@@ -352,23 +357,6 @@ button:disabled{opacity:.55;cursor:wait}
     </select>
   </label>
 </div>
-    </label>
-    <label for="batteryLevel">电池电量
-      <select id="batteryLevel">
-        <option value="10">10%</option>
-        <option value="25">25%</option>
-        <option value="50">50%</option>
-        <option value="75">75%</option>
-        <option value="100" selected>100%</option>
-      </select>
-    </label>
-  </div>
-
-  <label for="batteryCharging">充电状态</label>
-  <select id="batteryCharging">
-    <option value="no" selected>未充电</option>
-    <option value="yes">充电中</option>
-  </select>
 
   <div class="actions">
     <button class="primary" id="exportBtn">导出高清 PNG</button>
@@ -469,14 +457,19 @@ let objectURLs = [];
 let isRestoring = false;
 
 const defaultValues = {
- statusTime: '18:30',
-statusStyle: 'ios',
-carrierName: '中国移动',
-signalLevel: '4',
-wifiLevel: '3',
-batteryLevel: '100',
-batteryCharging: 'no',
-batteryPercent: 'no'
+  nickname: '小明',
+  postText: '记录生活里的美好，慢慢前进，认真生活。',
+  postTime: '今天 18:30',
+  likes: '小红\n阿杰\n小雨',
+  comments: '小红：拍得真不错！\n阿杰：生活真美好。',
+  statusTime: '18:30',
+  statusStyle: 'ios',
+  carrierName: '中国移动',
+  signalLevel: '4',
+  wifiLevel: '3',
+  batteryLevel: '100',
+  batteryCharging: 'no',
+  batteryPercent: 'no'
 };
 
 function makeAvatar() {
@@ -729,37 +722,6 @@ function render() {
 
       $('showComments').appendChild(div);
     });
-}
-
-  const likes = $('likes').value.split('\n').map(s => s.trim()).filter(Boolean);
-  $('showLikes').textContent = likes.length ? '♥  ' + likes.join('、') : '';
-
-  $('showComments').replaceChildren();
-  $('comments').value.split('\n').map(s => s.trim()).filter(Boolean).forEach(line => {
-    const div = document.createElement('div');
-    const chineseColon = line.indexOf('：');
-    const englishColon = line.indexOf(':');
-    let idx = -1;
-    if (chineseColon >= 0 && englishColon >= 0) {
-      idx = Math.min(chineseColon, englishColon);
-    } else {
-      idx = Math.max(chineseColon, englishColon);
-    }
-
-    if (idx >= 0) {
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'comment-name';
-      nameSpan.textContent = line.slice(0, idx);
-
-      const textSpan = document.createElement('span');
-      textSpan.textContent = '：' + line.slice(idx + 1).trim();
-
-      div.append(nameSpan, textSpan);
-    } else {
-      div.textContent = line;
-    }
-    $('showComments').appendChild(div);
-  });
 }
 
 function loadImageFile(file) {
@@ -1080,4 +1042,3 @@ initialize();
   referrerpolicy="no-referrer"></script>
 </body>
 </html>
-```
