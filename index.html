@@ -58,25 +58,143 @@ button:disabled{opacity:.55;cursor:wait}
   border:1px solid #e4e4e4;box-shadow:0 5px 24px #00000012;
   color:#222;flex-shrink:0
 }
-.status{
-  height:36px;padding:0 16px;display:flex;align-items:center;
-  justify-content:space-between;background:#fff;color:#111;
-  font-size:14px;font-weight:600;letter-spacing:.1px
+.status {
+  height: 36px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .1px;
 }
-.status-icons{display:flex;align-items:center;gap:5px;height:100%}
-.signal-icon{font-size:12px;letter-spacing:-2px;white-space:nowrap}
-.wifi-icon{display:block;flex-shrink:0}
-.battery{
-  width:23px;height:11px;border:1.4px solid currentColor;
-  border-radius:3px;padding:1.5px;position:relative;
-  display:inline-flex;align-items:center;flex-shrink:0
+
+.status-left,
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
 }
-.battery:after{
-  content:"";position:absolute;right:-4px;top:2.5px;width:2px;height:4px;
-  background:currentColor;border-radius:0 1px 1px 0
+
+.status-icons {
+  height: 100%;
+  flex-shrink: 0;
 }
-#batteryFill{height:100%;width:100%;border-radius:1px;background:#222}
-#chargingIcon{font-size:11px;color:#30a46c;display:none}
+
+.status-left {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#statusLeft {
+  font-variant-numeric: tabular-nums;
+}
+
+#statusCarrier {
+  display: none;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.signal-icon {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 14px;
+  width: 19px;
+  flex-shrink: 0;
+}
+
+.signal-icon span {
+  display: block;
+  width: 3.5px;
+  background: currentColor;
+  border-radius: 1px 1px 0 0;
+}
+
+.wifi-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.battery {
+  width: 23px;
+  height: 11px;
+  border: 1.4px solid currentColor;
+  border-radius: 3px;
+  padding: 1.5px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.battery:after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 2.5px;
+  width: 2px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 0 1px 1px 0;
+}
+
+#batteryFill {
+  height: 100%;
+  width: 100%;
+  border-radius: 1px;
+  background: #222;
+}
+
+.battery-percent {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+#chargingIcon {
+  font-size: 12px;
+  color: #30a46c;
+  display: none;
+}
+
+#phoneStatus[data-style="android"] {
+  height: 28px;
+  padding: 0 9px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+#phoneStatus[data-style="android"] #statusCarrier {
+  display: inline;
+}
+
+#phoneStatus[data-style="android"] .status-icons {
+  gap: 4px;
+}
+
+#phoneStatus[data-style="android"] #statusLeft {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#phoneStatus[data-style="ios"] .battery-percent {
+  display: none;
+}
+
+@media(max-width:360px) {
+  #phoneStatus[data-style="ios"] {
+    padding: 0 10px;
+  }
+
+  #phoneStatus[data-style="android"] {
+    padding: 0 7px;
+  }
+}
 .cover{
   height:225px;background:linear-gradient(135deg,#596777,#343b46);
   background-position:center;background-size:cover;background-repeat:no-repeat;
@@ -183,29 +301,57 @@ button:disabled{opacity:.55;cursor:wait}
   <textarea id="comments" maxlength="5000">小红：拍得真不错！
 阿杰：生活真美好。</textarea>
 
-  <h3>手机状态栏</h3>
-  <div class="field-row">
-    <label for="statusTime">状态栏时间
-      <input id="statusTime" value="18:30" maxlength="10">
-    </label>
-    <label for="signalLevel">移动信号
-      <select id="signalLevel">
-        <option value="1">1 格</option>
-        <option value="2">2 格</option>
-        <option value="3">3 格</option>
-        <option value="4" selected>4 格</option>
-      </select>
-    </label>
-  </div>
+ <h3>手机状态栏</h3>
 
-  <div class="field-row">
-    <label for="wifiLevel">Wi-Fi 显示
-      <select id="wifiLevel">
-        <option value="0">隐藏</option>
-        <option value="1">较弱</option>
-        <option value="2">中等</option>
-        <option value="3" selected>完整</option>
-      </select>
+<label for="statusStyle">手机样式</label>
+<select id="statusStyle">
+  <option value="ios">iPhone 风格</option>
+  <option value="android">Android 风格</option>
+</select>
+
+<div class="field-row">
+  <label for="statusTime">状态栏时间
+    <input id="statusTime" value="18:30" maxlength="10">
+  </label>
+  <label for="carrierName">运营商文字
+    <input id="carrierName" value="中国移动" maxlength="12">
+  </label>
+</div>
+
+<div class="field-row">
+  <label for="signalLevel">移动信号
+    <select id="signalLevel">
+      <option value="0">无信号</option>
+      <option value="1">1 格</option>
+      <option value="2">2 格</option>
+      <option value="3">3 格</option>
+      <option value="4" selected>4 格（满格）</option>
+    </select>
+  </label>
+
+  <label for="wifiLevel">Wi-Fi 强度
+    <select id="wifiLevel">
+      <option value="0">隐藏</option>
+      <option value="1">较弱</option>
+      <option value="2">中等</option>
+      <option value="3" selected>完整</option>
+    </select>
+  </label>
+</div>
+
+<label for="batteryLevel">
+  电池电量：<span id="batteryValue">100%</span>
+</label>
+
+  </label>
+
+  <label for="batteryPercent">电池百分比
+    <select id="batteryPercent">
+      <option value="no" selected>隐藏</option>
+      <option value="yes">显示</option>
+    </select>
+  </label>
+</div>
     </label>
     <label for="batteryLevel">电池电量
       <select id="batteryLevel">
@@ -243,21 +389,33 @@ button:disabled{opacity:.55;cursor:wait}
   <p class="preview-title">朋友圈模拟效果</p>
   <div class="preview-wrap">
     <div class="phone" id="capture">
-      <div class="status">
-        <span id="statusLeft">18:30</span>
-        <span class="status-icons">
-          <span class="signal-icon" id="signalIcon" aria-label="移动信号">▂▄▆█</span>
-          <svg id="wifiIcon" class="wifi-icon" width="19" height="16" viewBox="0 0 24 20" aria-label="Wi-Fi">
-            <path d="M2 6 Q12 -2 22 6 M5 10 Q12 4 19 10 M8.5 14 Q12 10 15.5 14"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
-          </svg>
-          <span class="battery">
-            <span id="batteryFill"></span>
-          </span>
-          <span id="chargingIcon" aria-label="充电中">ϟ</span>
-        </span>
-      </div>
+     <div class="status" id="phoneStatus" data-style="ios">
+  <div class="status-left">
+    <span id="statusLeft">18:30</span>
+    <span id="statusCarrier"></span>
+  </div>
+
+  <div class="status-icons">
+    <span id="signalIcon" class="signal-icon" aria-label="移动信号"></span>
+
+    <svg id="wifiIcon" class="wifi-icon"
+      width="19" height="16" viewBox="0 0 24 20"
+      aria-label="Wi-Fi">
+      <path d="M2 6 Q12 -2 22 6 M5 10 Q12 4 19 10 M8.5 14 Q12 10 15.5 14"
+        fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
+    </svg>
+
+    <span id="batteryPercentText" class="battery-percent"></span>
+
+    <span class="battery">
+      <span id="batteryFill"></span>
+    </span>
+
+    <span id="chargingIcon" aria-label="充电中">ϟ</span>
+  </div>
+</div>
 
       <div class="cover" id="cover">
         <div class="cover-name" id="coverName">小明</div>
@@ -311,16 +469,14 @@ let objectURLs = [];
 let isRestoring = false;
 
 const defaultValues = {
-  nickname: '小明',
-  postText: '记录生活里的美好，慢慢前进，认真生活。',
-  postTime: '今天 18:30',
-  likes: '小红\n阿杰\n小雨',
-  comments: '小红：拍得真不错！\n阿杰：生活真美好。',
-  statusTime: '18:30',
-  signalLevel: '4',
-  wifiLevel: '3',
-  batteryLevel: '100',
-  batteryCharging: 'no'
+ statusTime: '18:30',
+statusStyle: 'ios',
+carrierName: '中国移动',
+signalLevel: '4',
+wifiLevel: '3',
+batteryLevel: '100',
+batteryCharging: 'no',
+batteryPercent: 'no'
 };
 
 function makeAvatar() {
@@ -452,35 +608,128 @@ function render() {
   $('coverName').textContent = name;
   $('showText').textContent = $('postText').value;
   $('showTime').textContent = $('postTime').value;
-  $('statusLeft').textContent = $('statusTime').value || '18:30';
 
+  // 状态栏系统样式和时间
+  const style = $('statusStyle').value;
+  const status = $('phoneStatus');
+
+  status.dataset.style = style;
+  $('statusLeft').textContent = $('statusTime').value || '18:30';
+  $('statusCarrier').textContent = $('carrierName').value.trim();
+
+  // 头像
   const avatar = avatarURL || makeAvatar();
   $('profileAvatar').src = avatar;
   $('postAvatar').src = avatar;
 
-  const signal = Math.max(1, Math.min(4, Number($('signalLevel').value) || 4));
-  $('signalIcon').textContent = ['', '▂', '▂▄', '▂▄▆', '▂▄▆█'][signal];
-  $('signalIcon').style.opacity = String(0.35 + signal * 0.16);
+  // SVG 风格的信号格
+  const signal = Math.max(
+    0,
+    Math.min(4, Number($('signalLevel').value) || 0)
+  );
 
+  const signalIcon = $('signalIcon');
+  signalIcon.replaceChildren();
+
+  for (let i = 0; i < 4; i++) {
+    const bar = document.createElement('span');
+    bar.style.height = (4 + i * 2.5) + 'px';
+    bar.style.opacity = i < signal ? '1' : '0.18';
+    signalIcon.appendChild(bar);
+  }
+
+  signalIcon.setAttribute(
+    'aria-label',
+    signal === 0 ? '无信号' : signal + ' 格信号'
+  );
+
+  // Wi-Fi 显示与强度
   const wifi = Number($('wifiLevel').value);
-  $('wifiIcon').style.visibility = wifi === 0 ? 'hidden' : 'visible';
-  $('wifiIcon').style.opacity = wifi === 1 ? '0.35' : wifi === 2 ? '0.65' : '1';
+  $('wifiIcon').style.visibility =
+    wifi === 0 ? 'hidden' : 'visible';
+  $('wifiIcon').style.opacity =
+    wifi === 1 ? '0.35' :
+    wifi === 2 ? '0.65' : '1';
 
-  const battery = Number($('batteryLevel').value) || 100;
-  $('batteryFill').style.width = Math.max(0, Math.min(100, battery)) + '%';
+  // 电池电量
+  const battery = Math.max(
+    0,
+    Math.min(100, Number($('batteryLevel').value) || 0)
+  );
+
+  $('batteryValue').textContent = battery + '%';
+  $('batteryFill').style.width = battery + '%';
+
   $('batteryFill').style.background =
-    $('batteryCharging').value === 'yes' ? '#30a46c' :
-    battery <= 10 ? '#e5484d' : '#222';
-  $('chargingIcon').style.display =
-    $('batteryCharging').value === 'yes' ? 'inline' : 'none';
+    battery <= 20 ? '#e5484d' : '#222';
 
+  // Android 可选择显示电量百分比
+  $('batteryPercentText').textContent =
+    $('batteryPercent').value === 'yes' ? battery + '%' : '';
+
+  // 充电状态
+  const charging = $('batteryCharging').value === 'yes';
+  $('chargingIcon').style.display = charging ? 'inline' : 'none';
+
+  if (charging) {
+    $('batteryFill').style.background = '#30a46c';
+  }
+
+  // 动态图片
   $('showPhotos').replaceChildren();
+
   photoURLs.slice(0, 9).forEach(src => {
     const img = document.createElement('img');
     img.src = src;
     img.alt = '动态图片';
     $('showPhotos').appendChild(img);
   });
+
+  // 点赞
+  const likes = $('likes').value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  $('showLikes').textContent =
+    likes.length ? '♥  ' + likes.join('、') : '';
+
+  // 评论
+  $('showComments').replaceChildren();
+
+  $('comments').value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean)
+    .forEach(line => {
+      const chineseColon = line.indexOf('：');
+      const englishColon = line.indexOf(':');
+      let idx = -1;
+
+      if (chineseColon >= 0 && englishColon >= 0) {
+        idx = Math.min(chineseColon, englishColon);
+      } else {
+        idx = Math.max(chineseColon, englishColon);
+      }
+
+      const div = document.createElement('div');
+
+      if (idx >= 0) {
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'comment-name';
+        nameSpan.textContent = line.slice(0, idx);
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = '：' + line.slice(idx + 1).trim();
+
+        div.append(nameSpan, textSpan);
+      } else {
+        div.textContent = line;
+      }
+
+      $('showComments').appendChild(div);
+    });
+}
 
   const likes = $('likes').value.split('\n').map(s => s.trim()).filter(Boolean);
   $('showLikes').textContent = likes.length ? '♥  ' + likes.join('、') : '';
